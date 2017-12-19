@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+  
+  <Commands package="guidDebugHelpContextPackage">
+    <Groups>
+      <!-- Place our menu group towards the bottom of the IDE's top level "View" menu -->
+      <Group guid="guidDebugHelpContextPackageCmdSet" id="DebugHelpContextGroup" priority="0x9000">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_VIEW"/>
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidDebugHelpContextPackageCmdSet" id="DebugHelpContextId" priority="0x0100" type="Button">
+        <Parent guid="guidDebugHelpContextPackageCmdSet" id="DebugHelpContextGroup" />
+        <Icon guid="guidImages" id="bmpDebugHelpContext" />
+        <Strings>
+          <ButtonText>Debug Help Context</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\DebugHelpContext.bmp" usedList="bmpDebugHelpContext"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guidDebugHelpContextPackage" value="{0926e9f5-ceb6-4333-8b34-37de7acb8e94}" />
+    <GuidSymbol name="guidDebugHelpContextPackageCmdSet" value="{36c60ac4-07c8-4133-909c-1616dbfa662f}">
+      <IDSymbol name="DebugHelpContextGroup" value="0x1020" />
+      <IDSymbol name="DebugHelpContextId" value="0x0100" />
+    </GuidSymbol>
+    <GuidSymbol name="guidImages" value="{64710a77-37e7-48dd-bc93-6d52f5a085dc}" >
+      <IDSymbol name="bmpDebugHelpContext" value="1" />
+    </GuidSymbol>
+  </Symbols>
+  
+</CommandTable>
