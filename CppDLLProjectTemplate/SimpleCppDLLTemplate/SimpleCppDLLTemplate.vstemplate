@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>Simple C++ DLL Project</Name>
+    <Description>A simple C++ DLL project</Description>
+    <Icon>SimpleCppDLLTemplate.ico</Icon>
+    <ProjectType>VC</ProjectType>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <SortOrder>1</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>SimpleDLL</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="SimpleDLL.vcxproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">dllmain.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false">stdafx.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false">stdafx.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false">targetver.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false">SimpleDLL.vcxproj.filters</ProjectItem>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>SimpleCppDllWizard, Version=1.0.0.0, Culture=Neutral, PublicKeyToken=aeb01036844cf220</Assembly>
+    <FullClassName>SimpleCppDLLWizard.Wizard</FullClassName>
+  </WizardExtension>
+</VSTemplate>
