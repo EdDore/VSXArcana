@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>VSX Simple Package</Name>
+    <Description>Simple VSSDK Package with menu command</Description>
+    <Icon>SimplePackageTemplate.ico</Icon>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <SortOrder>1000</SortOrder>
+    <TemplateID>885e3cf0-5aff-47d5-804c-1a9c4a67fac8</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>SimplePackage</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="SimplePackage.csproj" ReplaceParameters="true" TargetFileName="$safeprojectname$.csproj">
+      <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$Package.cs" OpenInEditor="true">SimplePackage.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$Package.vsct">SimplePackage.vsct</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Resources\$safeprojectname$.png">Simple.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Resources\$safeprojectname$Package.ico">SimplePackage.ico</ProjectItem>
+      <ProjectItem ReplaceParameters="true">VSPackage.resx</ProjectItem>
+      <ProjectItem ReplaceParameters="true">source.extension.vsixmanifest</ProjectItem>
+      <ProjectItem ReplaceParameters="false">Key.snk</ProjectItem>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>VSXArcana.VSXWizards, Version=1.0.0.0, Culture=neutral, PublicKeyToken=97ab857e912d127d</Assembly>
+    <FullClassName>VSXArcana.VSXWizards.VSXSimplePackageWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Microsoft.Vsix.TemplatesPackage">
+      <package id="Microsoft.VisualStudio.CoreUtility" version="15.0.26201" />
+      <package id="Microsoft.VisualStudio.Imaging" version="15.0.26201" />
+      <package id="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" version="14.3.25408" />
+      <package id="Microsoft.VisualStudio.OLE.Interop" version="7.10.6071" />
+      <package id="Microsoft.VisualStudio.SDK.EmbedInteropTypes" version="15.0.10" />
+      <package id="Microsoft.VisualStudio.Shell.15.0" version="15.0.26201" />
+      <package id="Microsoft.VisualStudio.Shell.Framework" version="15.0.26201" />
+      <package id="Microsoft.VisualStudio.Shell.Interop" version="7.10.6071" />
+      <package id="Microsoft.VisualStudio.Shell.Interop.8.0" version="8.0.50727" />
+      <package id="Microsoft.VisualStudio.Shell.Interop.9.0" version="9.0.30729" />
+      <package id="Microsoft.VisualStudio.Shell.Interop.10.0" version="10.0.30319" />
+      <package id="Microsoft.VisualStudio.Shell.Interop.11.0" version="11.0.61030" />
+      <package id="Microsoft.VisualStudio.Shell.Interop.12.0" version="12.0.30110" />
+      <package id="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" version="14.3.25407" />
+      <package id="Microsoft.VisualStudio.TextManager.Interop" version="7.10.6070" />
+      <package id="Microsoft.VisualStudio.TextManager.Interop.8.0" version="8.0.50727" />
+      <package id="Microsoft.VisualStudio.Threading" version="15.0.240" />
+      <package id="Microsoft.VisualStudio.Utilities" version="15.0.26201" />
+      <package id="Microsoft.VisualStudio.Validation" version="15.0.82" />
+      <package id="Microsoft.VSSDK.BuildTools" version="15.7.104" />
+    </packages>
+  </WizardData>
+</VSTemplate>

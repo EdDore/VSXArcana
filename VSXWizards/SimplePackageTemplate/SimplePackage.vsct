@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guid$safeprojectname$Package">
+    <Groups>
+      <Group guid="guid$safeprojectname$PackageCmdSet" id="$safeprojectname$MenuGroup" priority="0x0100">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guid$safeprojectname$PackageCmdSet" id="$safeprojectname$Id" priority="0x0100" type="Button">
+        <Parent guid="guid$safeprojectname$PackageCmdSet" id="$safeprojectname$MenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <ButtonText>$safeprojectname$</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\$safeprojectname$.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <GuidSymbol name="guid$safeprojectname$Package" value="{7ea1a428-17be-4f01-83e4-fe5e5d382427}" />
+    <GuidSymbol name="guid$safeprojectname$PackageCmdSet" value="{eb7cb3a4-f89c-4791-9742-83c313992e39}">
+      <IDSymbol name="$safeprojectname$MenuGroup" value="0x1020" />
+      <IDSymbol name="$safeprojectname$Id" value="0x0100" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{5ca23775-196e-4158-806c-3c55b80f0dd4}" >
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  </Symbols>
+
+</CommandTable>
