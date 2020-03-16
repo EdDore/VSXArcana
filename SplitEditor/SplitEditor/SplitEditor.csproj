@@ -91,6 +91,7 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="readme.md" />
     <Content Include="Resources\Command1.png" />
   </ItemGroup>
   <ItemGroup>
