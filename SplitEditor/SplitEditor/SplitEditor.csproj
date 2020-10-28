@@ -50,6 +50,7 @@
     </Compile>
     <Compile Include="DesignerEditorFactory.cs" />
     <Compile Include="DesignerPane.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceEditorFactory.cs" />
     <Compile Include="SplitEditorFactoryBase.cs" />
