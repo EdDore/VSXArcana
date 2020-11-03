@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 namespace SplitEditor
 {
-    class SplitViewEditorPane : WindowPane, IVsMultiViewDocumentView, IVsDeferredDocView, IVsCodeWindow, IVsFindTarget
+    class SplitViewEditorPane : WindowPane, IVsMultiViewDocumentView, IVsDeferredDocView, IVsCodeWindow, IOleCommandTarget, IVsFindTarget
     {
         private IVsHierarchy vsHierarchy;
         private uint itemid;
@@ -199,6 +199,17 @@ namespace SplitEditor
             }
         }
 
+        private object GetView(IVsWindowFrame frame)
+        {
+            if (frame != null)
+            {
+                object view;
+                frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out view);
+                return view;
+            }
+            return null;
+        }
+
         #region IOleCommandTarget
 
         int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -212,17 +223,20 @@ namespace SplitEditor
             }
             return hr;
         }
-       
-        private object GetView(IVsWindowFrame frame)
+
+        int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
-            if (frame!=null)
+            int hr = (int)Microsoft.VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
+
+            IOleCommandTarget cmdTarget = (IOleCommandTarget)ActiveCommandTarget;
+            if (cmdTarget != null)
             {
-                object view;
-                frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out view);
-                return view;
+                hr = cmdTarget.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
             }
-            return null;
+            return hr;
         }
+
+        #endregion
 
         #region IVsMulitiViewDocumentView
 
@@ -538,7 +552,6 @@ namespace SplitEditor
         }
 
         #endregion
-
 
     }
 }

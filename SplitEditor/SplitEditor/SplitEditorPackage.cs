@@ -31,20 +31,14 @@ namespace SplitEditor
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(PackageGuids.guidSplitEditorPackageString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    public sealed class SplitEditorPackage : AsyncPackage, IVsRunningDocTableEvents
+    public sealed class SplitEditorPackage : AsyncPackage
     {
-        private IVsRunningDocumentTable _rdt = null;
-        private uint rdtEventsCookie = 0;
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
-            _rdt = await this.GetServiceAsync(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable;
-            Assumes.Present(_rdt);
-            int hr = _rdt.AdviseRunningDocTableEvents(this, out rdtEventsCookie);
 
             // TODO: Set up package level menu commands here (if we have any)
             OleMenuCommandService commandService = await this.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
@@ -64,47 +58,5 @@ namespace SplitEditor
             // todo:
         }
 
-        #region IVsRunningDocTableEvents
-
-        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
-        {
-            uint grfRDTFlags, dwReadLocks, dwEditLocks, itemID;
-            string filename;
-            IVsHierarchy hier;
-            IntPtr punkDocData;
-
-            int hr = _rdt.GetDocumentInfo(docCookie, out grfRDTFlags, out dwReadLocks, out dwEditLocks, out filename, out hier, out itemID, out punkDocData);
-
-            System.Diagnostics.Debug.WriteLine(filename);
-
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterSave(uint docCookie)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
-        {
-            return VSConstants.S_OK;
-        }
-
-        #endregion
     }
 }
