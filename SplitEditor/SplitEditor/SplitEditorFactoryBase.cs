@@ -88,11 +88,8 @@ namespace SplitEditor
                     }
                 }
 
-                //using (DpiAwareness.EnterDpiScope(DpiAwareness.ProcessDpiAwarenessContext))
-                //{
                 docViewObject = this.CreateDocView(this.serviceProvider, hierarchy, itemid, fileName, docDataObject, out cmdUIGuid);
                 Debug.Assert(docViewObject != null);
-                //}
 
                 // todo: maybe check to see if we need to add readonly to caption?
                 caption = "";

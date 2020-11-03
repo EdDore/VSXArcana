@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Package;
 
 namespace SplitEditor
 {
-    class SplitViewEditorPane : WindowPane, IVsMultiViewDocumentView, IVsDeferredDocView, IVsCodeWindow
+    class SplitViewEditorPane : WindowPane, IVsMultiViewDocumentView, IVsDeferredDocView, IVsCodeWindow, IVsFindTarget
     {
         private IVsHierarchy vsHierarchy;
         private uint itemid;
@@ -70,12 +70,10 @@ namespace SplitEditor
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            // BUG!!!: we should get a prompt to save if dirty, even though
-            // we close the child frames out with NoSave, but the RDT isn't finding the 
-            // prompt to save along with save if dirty flags for some reason...
-            sourceFrame.CloseFrame((uint) __FRAMECLOSE.FRAMECLOSE_NoSave);
-            designerFrame.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_NoSave);
-            
+            // BUGFIX!!! Use FRAMECLOSE_PromptSave, so we get a save prompt
+            //           when file is dirty/modified
+            sourceFrame.CloseFrame((uint) __FRAMECLOSE.FRAMECLOSE_PromptSave);
+            designerFrame.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_PromptSave);
             base.OnClose();
         }
 
@@ -169,6 +167,17 @@ namespace SplitEditor
             }
         }
        
+        private object GetView(IVsWindowFrame frame)
+        {
+            if (frame!=null)
+            {
+                object view;
+                frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out view);
+                return view;
+            }
+            return null;
+        }
+
         #region IVsMulitiViewDocumentView
 
         public int ActivateLogicalView(ref Guid rguidLogicalView)
@@ -331,6 +340,159 @@ namespace SplitEditor
         }
 
         #endregion
+
+        #region IVsFindTarget
+
+        int IVsFindTarget.GetCapabilities(bool[] pfImage, uint[] pgrfOptions)
+        {
+            IVsFindTarget vsFindTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (vsFindTarget!=null)
+            {
+                return vsFindTarget.GetCapabilities(pfImage, pgrfOptions);
+            }
+
+            if (pfImage != null && pfImage.Length > 0)
+                pfImage[0] = true;
+
+            if (pgrfOptions != null && pgrfOptions.Length > 0)
+            {
+                pgrfOptions[0] = (uint)__VSFINDOPTIONS.FR_ActionMask;
+                pgrfOptions[0] |= (uint)__VSFINDOPTIONS.FR_SyntaxMask;
+                pgrfOptions[0] |= (uint)__VSFINDOPTIONS.FR_CommonOptions;
+                pgrfOptions[0] |= (uint)__VSFINDOPTIONS.FR_Selection;
+                pgrfOptions[0] |= (uint)__VSFINDOPTIONS.FR_Backwards;
+            }
+
+            return VSConstants.S_OK;
+        }
+
+        int IVsFindTarget.GetProperty(uint propid, out object pvar)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.GetProperty(propid, out pvar);
+            }
+
+            pvar = null;
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.GetSearchImage(uint grfOptions, IVsTextSpanSet[] ppSpans, out IVsTextImage ppTextImage)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.GetSearchImage(grfOptions, ppSpans, out ppTextImage);
+            }
+            ppTextImage = null;
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.Find(string pszSearch, uint grfOptions, int fResetStartPoint, IVsFindHelper pHelper, out uint pResult)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.Find(pszSearch, grfOptions, fResetStartPoint, pHelper, out pResult);
+            }
+
+            pResult = (uint)__VSFINDRESULT.VSFR_NotFound;
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.Replace(string pszSearch, string pszReplace, uint grfOptions, int fResetStartPoint, IVsFindHelper pHelper, out int pfReplaced)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.Replace(pszSearch, pszReplace, grfOptions, fResetStartPoint, pHelper, out pfReplaced);
+            }
+
+            pfReplaced = 0;
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.GetMatchRect(Microsoft.VisualStudio.OLE.Interop.RECT[] prc)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.GetMatchRect(prc);
+            }
+
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.NavigateTo(TextSpan[] pts)
+        {
+            // do we need to activate/show window here first?
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.NavigateTo(pts);
+            }
+
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.GetCurrentSpan(TextSpan[] pts)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.GetCurrentSpan(pts);
+            }
+
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.SetFindState(object pUnk)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.SetFindState(pUnk);
+            }
+
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.GetFindState(out object ppunk)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.GetFindState(out ppunk);
+            }
+
+            ppunk = null;
+            return VSConstants.E_NOTIMPL;
+        }
+
+        int IVsFindTarget.NotifyFindTarget(uint notification)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.NotifyFindTarget(notification);
+            }
+
+            return VSConstants.S_OK;
+        }
+
+        int IVsFindTarget.MarkSpan(TextSpan[] pts)
+        {
+            IVsFindTarget findTarget = GetView(sourceFrame) as IVsFindTarget;
+            if (findTarget != null)
+            {
+                return findTarget.MarkSpan(pts);
+            }
+            return VSConstants.E_NOTIMPL;
+        }
+
+        #endregion
+
 
     }
 }

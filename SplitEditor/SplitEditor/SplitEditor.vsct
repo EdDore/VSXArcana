@@ -12,11 +12,11 @@
     </Groups>
 
     <Buttons>
-      <Button guid="guidSplitEditorPackageCmdSet" id="Command1Id" priority="0x0100" type="Button">
+      <Button guid="guidSplitEditorPackageCmdSet" id="DoNothingCommand" priority="0x0100" type="Button">
         <Parent guid="guidSplitEditorPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Invoke Command1</ButtonText>
+          <ButtonText>Invoke DoNothing...</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -31,7 +31,7 @@
 
     <GuidSymbol name="guidSplitEditorPackageCmdSet" value="{a5b0267f-a896-40cf-8761-ea107ab2fdc1}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="Command1Id" value="0x0100" />
+      <IDSymbol name="DoNothingCommand" value="0x0100" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{de2120f7-8c4e-4cbe-b74f-36fd9b358eed}" >

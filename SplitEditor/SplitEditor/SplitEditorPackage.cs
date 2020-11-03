@@ -29,13 +29,12 @@ namespace SplitEditor
     [ProvideEditorLogicalView(typeof(SourceEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
     //-------------------------------------------------------------------------------------------------//
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(SplitEditorPackage.PackageGuidString)]
+    [Guid(PackageGuids.guidSplitEditorPackageString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    public sealed class SplitEditorPackage : AsyncPackage
+    public sealed class SplitEditorPackage : AsyncPackage, IVsRunningDocTableEvents
     {
-        public const string PackageGuidString = "e23c9b8f-c3d4-4772-ab0a-9e01ec879485";
-        public static readonly Guid CommandSet = new Guid("a5b0267f-a896-40cf-8761-ea107ab2fdc1");
-        public const int CommandId = 0x0100;
+        private IVsRunningDocumentTable _rdt = null;
+        private uint rdtEventsCookie = 0;
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
@@ -43,21 +42,69 @@ namespace SplitEditor
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+            _rdt = await this.GetServiceAsync(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable;
+            Assumes.Present(_rdt);
+            int hr = _rdt.AdviseRunningDocTableEvents(this, out rdtEventsCookie);
+
             // TODO: Set up package level menu commands here (if we have any)
             OleMenuCommandService commandService = await this.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Assumes.Present(commandService);
-            var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(this.OnCommandId, menuCommandID);
+            var menuCommandID = new CommandID(PackageGuids.guidSplitEditorPackageCmdSet, PackageIds.DoNothingCommand);
+            var menuItem = new MenuCommand(this.OnDoNothing, menuCommandID);
             commandService.AddCommand(menuItem);
 
             this.RegisterEditorFactory(new SplitViewEditorFactory(this));
             this.RegisterEditorFactory(new DesignerEditorFactory(this));
             this.RegisterEditorFactory(new SourceEditorFactory(this));
+
         }
 
-        private void OnCommandId(object sender, EventArgs e)
+        private void OnDoNothing(object sender, EventArgs e)
         {
             // todo:
         }
+
+        #region IVsRunningDocTableEvents
+
+        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+        {
+            uint grfRDTFlags, dwReadLocks, dwEditLocks, itemID;
+            string filename;
+            IVsHierarchy hier;
+            IntPtr punkDocData;
+
+            int hr = _rdt.GetDocumentInfo(docCookie, out grfRDTFlags, out dwReadLocks, out dwEditLocks, out filename, out hier, out itemID, out punkDocData);
+
+            System.Diagnostics.Debug.WriteLine(filename);
+
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterSave(uint docCookie)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
+        {
+            return VSConstants.S_OK;
+        }
+
+        #endregion
     }
 }
