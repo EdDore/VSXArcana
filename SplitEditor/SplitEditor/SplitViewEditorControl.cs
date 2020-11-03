@@ -13,15 +13,17 @@ using Microsoft;
 
 namespace SplitEditor
 {
-    public partial class SplitViewEditorControl : UserControl
+    internal partial class SplitViewEditorControl : UserControl
     {
         private IServiceProvider serviceProvider;
+
         public SplitterPanel DesignerPanel { get; private set; }
+
         public SplitterPanel SourcePanel { get; private set; }
 
-        public SplitViewEditorControl(IServiceProvider serviceProvider)
+        public SplitViewEditorControl(IServiceProvider sp)
         {
-            this.serviceProvider = serviceProvider;
+            this.serviceProvider = sp;
 
             InitializeComponent();
             DesignerPanel = splitContainer.Panel1;

@@ -82,6 +82,8 @@ namespace SplitEditor
                     // if document is already open
                     docDataObject = Marshal.GetObjectForIUnknown(existingDocData);
                     IVsTextLines textLines = docDataObject as IVsTextLines;
+                    Marshal.Release(existingDocData);
+
                     if (textLines == null)
                     {
                         return VSConstants.VS_E_INCOMPATIBLEDOCDATA;

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Drawing;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Package;
+using Microsoft.VisualStudio.OLE.Interop;
 
 namespace SplitEditor
 {
@@ -24,8 +25,8 @@ namespace SplitEditor
         private SplitViewEditorControl splitViewEditorControl;
         private IVsWindowFrame designerFrame = null;
         private IVsWindowFrame sourceFrame = null;
-
-        internal SplitViewEditorPane(IServiceProvider serviceProvider, IVsHierarchy hierarchy, uint itemid, string filename, object docData, out Guid cmdUIGuid) : base(serviceProvider)
+        
+        internal SplitViewEditorPane(System.IServiceProvider serviceProvider, IVsHierarchy hierarchy, uint itemid, string filename, object docData, out Guid cmdUIGuid) : base(serviceProvider)
         {
             this.vsHierarchy = hierarchy;
             this.itemid = itemid;
@@ -59,10 +60,22 @@ namespace SplitEditor
 
             this.splitViewEditorControl.DesignerPanel.SizeChanged += DesignerPanel_SizeChanged;
             this.splitViewEditorControl.SourcePanel.SizeChanged += SourcePanel_SizeChanged;
+            this.splitViewEditorControl.VisibleChanged += SplitViewEditorControl_VisibleChanged;
         }
+
+        private void SplitViewEditorControl_VisibleChanged(object sender, EventArgs e)
+        {
+            // set focus to source code window when first displayed.
+            if (this.splitViewEditorControl.Visible)
+            {
+                Guid codeView = VSConstants.LOGVIEWID_Code;
+                ActivateLogicalView(ref codeView);
+            }
+        }
+
         protected override bool PreProcessMessage(ref Message m)
         {
-            // TODO: May need to forward messages to active designer or source pane here.
+            
             return base.PreProcessMessage(ref m);
         }
 
@@ -166,6 +179,39 @@ namespace SplitEditor
                 return _vsCodeWindow;
             }
         }
+
+        private IOleCommandTarget ActiveCommandTarget
+        {
+            get
+            {
+                object activeView;
+                if (this.splitViewEditorControl.SourcePanel.ContainsFocus)
+                {
+                    //System.Diagnostics.Debug.WriteLine("Active Command Target is Source view");
+                    sourceFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out activeView);
+                }
+                else
+                {
+                    //System.Diagnostics.Debug.WriteLine("Active Command Target is Designer view");
+                    designerFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out activeView);
+                }
+                return (IOleCommandTarget)activeView;
+            }
+        }
+
+        #region IOleCommandTarget
+
+        int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
+            int hr = (int)Microsoft.VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
+
+            IOleCommandTarget cmdTarget = (IOleCommandTarget)ActiveCommandTarget;
+            if (cmdTarget != null)
+            {
+                hr = cmdTarget.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            }
+            return hr;
+        }
        
         private object GetView(IVsWindowFrame frame)
         {
@@ -183,17 +229,17 @@ namespace SplitEditor
         public int ActivateLogicalView(ref Guid rguidLogicalView)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            if (rguidLogicalView.Equals(VSConstants.LOGVIEWID_Any) || rguidLogicalView.Equals(VSConstants.LOGVIEWID_Primary))
+
+            if (rguidLogicalView.Equals(VSConstants.LOGVIEWID_Designer))
             {
-                // keep whatever's active, active
+                if (this.designerFrame != null)
+                    this.designerFrame.Show();
                 return VSConstants.S_OK;
             }
             else
             {
-                // TODO: Activate either the code or designer frame.
-                if (this.sourceFrame!=null)
+                if (this.sourceFrame != null)
                     this.sourceFrame.Show();
-
                 return VSConstants.S_OK;
             }
         }
